@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Add Class Schedule{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-plus me-2"></i>Add Class Schedule</h2>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.course.label(class="form-label") }}
+                        {{ form.course(class="form-select") }}
+                        {% if form.course.errors %}
+                            {% for error in form.course.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.day_of_week.label(class="form-label") }}
+                        {{ form.day_of_week(class="form-select") }}
+                        {% if form.day_of_week.errors %}
+                            {% for error in form.day_of_week.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.start_time.label(class="form-label") }}
+                            {{ form.start_time(class="form-control", type="time") }}
+                            {% if form.start_time.errors %}
+                                {% for error in form.start_time.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.end_time.label(class="form-label") }}
+                            {{ form.end_time(class="form-control", type="time") }}
+                            {% if form.end_time.errors %}
+                                {% for error in form.end_time.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.location.label(class="form-label") }}
+                        {{ form.location(class="form-control") }}
+                        {% if form.location.errors %}
+                            {% for error in form.location.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('admin_schedule') }}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

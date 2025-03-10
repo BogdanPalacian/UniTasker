@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-book me-2"></i>My Courses</h2>
+</div>
+
+<div class="row g-4">
+    {% if courses %}
+        {% for course in courses %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ course.code }}</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">{{ course.title }}</h6>
+                    <p class="card-text">{{ course.description or 'No description available.' }}</p>
+                    
+                    <div class="mb-3">
+                        <strong class="text-muted">Professor:</strong>
+                        <p class="mb-0">{{ course.professor.first_name }} {{ course.professor.last_name }}</p>
+                        <small class="text-muted">{{ course.professor.email }}</small>
+                    </div>
+
+                    <!-- Course Statistics -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block">Assignments</small>
+                                <strong>{{ course.assignments|length }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block">Classmates</small>
+                                <strong>{{ course.students|length }} Students</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('view_assignments') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-tasks me-2"></i>View Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>You are not enrolled in any courses yet.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

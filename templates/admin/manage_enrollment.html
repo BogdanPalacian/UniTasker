@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Manage Student Enrollment{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-user-graduate me-2"></i>Manage Enrollment</h2>
+    <p class="text-muted">Student: {{ student.first_name }} {{ student.last_name }}</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.courses.label(class="form-label") }}
+                        {{ form.courses(class="form-select", size="10", multiple=true) }}
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple courses</small>
+                        {% if form.courses.errors %}
+                            {% for error in form.courses.errors %}
+                                <small class="text-danger d-block">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('admin_students') }}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

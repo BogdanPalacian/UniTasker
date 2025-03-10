@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Create Assignment{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-plus me-2"></i>Create Assignment</h2>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.course.label(class="form-label") }}
+                        {{ form.course(class="form-select") }}
+                        {% if form.course.errors %}
+                            {% for error in form.course.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            {% for error in form.title.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="5") }}
+                        {% if form.description.errors %}
+                            {% for error in form.description.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+						{{ form.due_date.label(class="form-label") }}
+						{{ form.due_date(class="form-control", type="datetime-local", required=True) }}
+						{% if form.due_date.errors %}
+							{% for error in form.due_date.errors %}
+								<small class="text-danger">{{ error }}</small>
+							{% endfor %}
+						{% endif %}
+					</div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Assignment Submissions{% endblock %}
+
+{% block content %}
+<div class="submissions-view"> 
+<div class="page-header">
+    <h2><i class="fas fa-inbox me-2"></i>Submissions for {{ assignment.title }}</h2>
+    <p class="text-muted">{{ assignment.course.title }}</p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Assignment Details</h5>
+    </div>
+    <div class="card-body">
+        <p class="card-text">{{ assignment.description }}</p>
+        <div class="alert alert-info">
+            Due: {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') }}
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student Submissions</h5>
+    </div>
+    <div class="card-body">
+        {% if submissions %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Submission Date</th>
+                            <th>Status</th>
+                            <th>Grade</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                            <tr>
+                                <td>{{ submission.student.first_name }} {{ submission.student.last_name }}</td>
+                                <td>{{ submission.submission_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if submission.submission_date > assignment.due_date %}
+                                        <span class="badge bg-warning">Late</span>
+                                    {% else %}
+                                        <span class="badge bg-success">On Time</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if submission.grade is not none %}
+                                        {{ submission.grade }}/100
+                                    {% else %}
+                                        <span class="text-muted">Not graded</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewModal{{ submission.id }}">
+                                        View
+                                    </button>
+                                    {% if submission.grade is none %}
+                                        <a href="{{ url_for('grade_submission', submission_id=submission.id) }}" class="btn btn-sm btn-success">
+                                            Grade
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            <!-- View Submission Modal -->
+                            <div class="modal fade" id="viewModal{{ submission.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ submission.id }}" aria-hidden="true" data-bs-backdrop="static">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="viewModalLabel{{ submission.id }}">
+                                                Submission by {{ submission.student.first_name }} {{ submission.student.last_name }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <h6>Submission Content:</h6>
+                                                <pre class="bg-light p-3 rounded">{{ submission.content }}</pre>
+                                            </div>
+                                            {% if submission.grade is not none %}
+                                                <div class="alert alert-info">
+                                                    <strong>Grade:</strong> {{ submission.grade }}/100
+                                                    {% if submission.feedback %}
+                                                        <hr>
+                                                        <strong>Feedback:</strong>
+                                                        <p class="mb-0">{{ submission.feedback }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            {% if submission.grade is none %}
+                                                <a href="{{ url_for('grade_submission', submission_id=submission.id) }}" class="btn btn-success">
+                                                    Grade Submission
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No submissions yet.</p>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent modal from closing when clicking outside
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                e.stopPropagation();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

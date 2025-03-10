@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Assignments{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h2><i class="fas fa-tasks me-2"></i>Assignments</h2>
+    {% if current_user.role == 'professor' %}
+    <a href="{{ url_for('create_assignment') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Create Assignment
+    </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% if current_user.role == 'student' %}
+        <!-- Student View -->
+        {% for assignment in assignments %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ assignment.title }}</h5>
+                    <span class="badge {% if assignment.is_overdue %}bg-danger{% else %}bg-primary{% endif %}">
+                        Due: {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ assignment.course.title }}</h6>
+                    <p class="card-text">{{ assignment.description }}</p>
+                    {% set submission = assignment.get_student_submission(current_user.id) %}
+                    {% if submission %}
+                        <div class="alert alert-info">
+                            <strong>Submitted:</strong> {{ submission.submission_date.strftime('%Y-%m-%d %H:%M') }}
+                            {% if submission.grade is not none %}
+                                <br>
+                                <strong>Grade:</strong> {{ submission.grade }}/100
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('submit_assignment', assignment_id=assignment.id) }}" 
+                           class="btn btn-primary">Submit Assignment</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <!-- Professor View -->
+        {% for assignment in assignments %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ assignment.title }}</h5>
+                    <span class="badge bg-primary">
+                        Due: {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ assignment.course.title }}</h6>
+                    <p class="card-text">{{ assignment.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            Submissions: {{ assignment.submissions|length }}/{{ assignment.course.students|length }}
+                        </small>
+                        <a href="{{ url_for('view_submissions', assignment_id=assignment.id) }}" 
+                           class="btn btn-outline-primary">View Submissions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

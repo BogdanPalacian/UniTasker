@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My Classes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-chalkboard-teacher me-2"></i>My Classes</h2>
+</div>
+
+<div class="row g-4">
+    {% if courses %}
+        {% for course in courses %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ course.code }}</h5>
+                    <span class="badge bg-primary">{{ course.students|length }} Students</span>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">{{ course.title }}</h6>
+                    <p class="card-text">{{ course.description or 'No description available.' }}</p>
+                    
+                    <!-- Student List Collapsible -->
+                    <div class="accordion" id="studentList{{ course.id }}">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#studentCollapse{{ course.id }}">
+                                    Enrolled Students
+                                </button>
+                            </h2>
+                            <div id="studentCollapse{{ course.id }}" class="accordion-collapse collapse" 
+                                 data-bs-parent="#studentList{{ course.id }}">
+                                <div class="accordion-body">
+                                    {% if course.students %}
+                                        <div class="list-group">
+                                            {% for student in course.students %}
+                                            <div class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+                                                        <small class="text-muted d-block">{{ student.email }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted mb-0">No students enrolled yet.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('view_assignments') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-tasks me-2"></i>View Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>You are not currently teaching any classes.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

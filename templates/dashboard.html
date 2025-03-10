@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+    <p class="text-muted">Welcome back, {{ current_user.first_name if current_user.first_name else current_user.username }} ({{ current_user.role.title() }})</p>
+</div>
+
+<div class="row g-4">
+    <!-- Common Statistics -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="fas fa-bell me-2"></i>Notifications
+                </h5>
+                <p class="display-4 mb-3">{{ notifications|length }}</p>
+                <p class="text-muted">Unread notifications</p>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role == 'student' %}
+    <!-- Student-specific cards -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-success">
+                    <i class="fas fa-tasks me-2"></i>Assignments
+                </h5>
+                <p class="display-4 mb-3">{{ pending_assignments|length }}</p>
+                <p class="text-muted">Pending assignments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-info">
+                    <i class="fas fa-graduation-cap me-2"></i>Courses
+                </h5>
+                <p class="display-4 mb-3">{{ enrolled_courses|length }}</p>
+                <p class="text-muted">Enrolled courses</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.role == 'professor' %}
+    <!-- Professor-specific cards -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-warning">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>Classes
+                </h5>
+                <p class="display-4 mb-3">{{ teaching_courses|length }}</p>
+                <p class="text-muted">Classes teaching</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-danger">
+                    <i class="fas fa-file-alt me-2"></i>To Grade
+                </h5>
+                <p class="display-4 mb-3">{{ submissions_to_grade|length if submissions_to_grade else 0 }}</p>
+                <p class="text-muted">Submissions pending review</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Activity Section -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_activities %}
+                    <div class="list-group">
+                    {% for activity in recent_activities %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ activity.title }}</h6>
+                                <small class="text-muted">{{ activity.timestamp.strftime('%Y-%m-%d %H:%M') if activity.timestamp else 'N/A' }}</small>
+                            </div>
+                            <p class="mb-1">{{ activity.description }}</p>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No recent activity to display.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if current_user.role == 'student' %}
+                        <a href="{{ url_for('view_assignments') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-tasks me-2"></i>View Assignments
+                        </a>
+                        <a href="{{ url_for('view_grades') }}" class="btn btn-outline-info">
+                            <i class="fas fa-chart-line me-2"></i>Check Grades
+                        </a>
+                    {% endif %}
+                    
+                    {% if current_user.role == 'professor' %}
+                        <a href="{{ url_for('create_assignment') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-plus me-2"></i>Create Assignment
+                        </a>
+                        <a href="{{ url_for('view_assignments') }}" class="btn btn-outline-warning">
+							<i class="fas fa-check me-2"></i>Grade Submissions
+						</a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('create_note') }}" class="btn btn-outline-success">
+                        <i class="fas fa-sticky-note me-2"></i>Create Note
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    <div class="list-group">
+                    {% for event in upcoming_events %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ event.title }}</h6>
+                                <small class="text-muted">{{ event.date.strftime('%Y-%m-%d') if event.date else 'N/A' }}</small>
+                            </div>
+                            <p class="mb-1">{{ event.description }}</p>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No upcoming events to display.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
